@@ -1,0 +1,37 @@
+
+pip install --upgrade google-cloud-storage
+https://pypi.org/project/google-cloud-storage/
+
+
+Authentication
+https://google-cloud-python.readthedocs.io/en/latest/core/auth.html
+
+Developing locally, the easiest way to authenticate is using the Google Cloud SDK:
+https://cloud.google.com/sdk/docs/quickstart-linux
+
+/home/vital/google-cloud-sdk/install.sh
+
+gcloud init
+
+gcloud auth application-default login
+
+Credentials saved to file: [/home/vital/.config/gcloud/application_default_credentials.json]
+
+
+gcloud config set project bubbly-solution-204914
+
+
+
+
+
+client = storage.Client()
+# https://console.cloud.google.com/storage/browser/[bucket-id]/
+bucket = client.get_bucket('ru-0c488479-2436-40a1-9e13-c9831c8a938d')
+
+
+
+
+gsutil cp gs://ru-0c488479-2436-40a1-9e13-c9831c8a938d
+
+
+gsutil cp -r dir gs://ru-0c488479-2436-40a1-9e13-c9831c8a938d
