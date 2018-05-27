@@ -3,6 +3,8 @@
 import os
 import subprocess
 import pandas as pd
+import ast
+
 
 
 #Copy all files from bucket
@@ -39,10 +41,26 @@ for f in os.listdir('.'):
 
 
 
-lod = [] #list of dictionaries
 
-with open('tracks') as f:
-	for line in f:
-		lod.append(line)
 
-pd.
+def read_data(filename):
+	'''
+	reads the contents of streams, tracks and users into a list of dictionaries
+	and returns a pandas dataframe
+	'''
+
+	lod = [] #list of diction aries
+
+	with open(filename) as f:
+		for line in f:
+			lod.append(ast.literal_eval(line))
+
+	return pd.DataFrame(lod)
+
+tracks = read_data('tracks')
+users = read_data('users')
+streams = read_data('streams')
+
+
+#In streams, group by track_id (and user_id in second level!)
+#see tracks repeated more than a n times within a Delta timestamp (by same user)
