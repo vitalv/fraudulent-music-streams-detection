@@ -9,6 +9,9 @@ from airflow import DAG
 # Operators; we need this to operate!
 from airflow.operators.bash_operator import BashOperator
 
+from airflow.operators.python_operator import PythonOperator
+
+from fetch import fetch_data, move_rename, gunzip
 
 from datetime import datetime, timedelta
 
@@ -23,12 +26,12 @@ or (better!) we can define a dictionary of default parameters that we can use wh
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2015, 6, 1),
+    'start_date': datetime(2018, 5, 28),
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
+    'retry_delay': timedelta(minutes=5) 
     # 'queue': 'bash_queue',
     # 'pool': 'backfill',
     # 'priority_weight': 10,
@@ -41,10 +44,16 @@ default_args = {
 DAG object to nest the tasks into. 
 Pass a string that defines the dag_id, a unique identifier for the DAG. 
 Pass the default argument dictionary defined above and define a schedule_interval of 1 day for the DAG.
+
+If the DAG is written to handle it's own catchup 
+(IE not limited to the interval, but instead to "Now" for instance.), 
+then you will want to turn catchup off (Either on the DAG itself with dag.catchup = False) 
 '''
 
-dag = DAG(
-    'tutorial', default_args=default_args, schedule_interval=timedelta(1))
+#dag = DAG('my_pipeline', default_args=default_args, catchup=False )
+dag = DAG('my_pipeline', default_args=default_args, schedule_interval='@once')
+
+
 
 
 
@@ -57,6 +66,7 @@ The first argument task_id acts as a unique identifier for the task.
 '''
 
 
+'''
 t1 = BashOperator(
     task_id='print_date',
     bash_command='date',
@@ -83,18 +93,58 @@ t3 = BashOperator(
     params={'my_param': 'Parameter I passed in'},
     dag=dag)
 
+'''
+
+
+t1 = PythonOperator(
+	dag=dag,
+	task_id='fetch_data',
+	provide_context=False,
+	python_callable=fetch_data
+	#op_args=['arguments_passed_to_callable'],
+	#op_kwargs={'keyword_argument':'which will be passed to function'}
+	)
+
+
+t2 = PythonOperator(
+    dag=dag,
+    task_id='move_rename',
+    provide_context=False,
+    python_callable=move_rename
+    )
+
+
+t3 = PythonOperator(
+    dag=dag,
+    task_id='unzip',
+    provide_context=False,
+    python_callable=gunzip
+    )
+
 
 
 t2.set_upstream(t1)
+t3.set_upstream(t2)
+
+#t1 >> t2 
+
+#t2 >> t3
 
 # This means that t2 will depend on t1
 # running successfully to run
 # It is equivalent to
 # t1.set_downstream(t2)
 
-t3.set_upstream(t1)
+#t3.set_upstream(t1)
 
 # all of this is equivalent to
 # dag.set_dependency('print_date', 'sleep')
 # dag.set_dependency('print_date', 'templated')
 
+
+
+'''
+Run 
+airflow test my_pipeline fetch_data 2018-05-28
+without the need of a running web server to check 
+'''
