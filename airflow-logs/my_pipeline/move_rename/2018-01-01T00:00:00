@@ -1,0 +1,54 @@
+[2018-05-28 15:27:49,823] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:27:49,986] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline move_rename 2018-01-01T00:00:00 --job_id 3 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:27:50,230] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,230] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:27:50,294] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,294] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:27:50,310] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,310] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:27:50,478] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,478] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:27:50,637] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,636] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,664] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,665] {models.py:1318} INFO - 
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: Starting attempt 1 of 2
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:27:50,665] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:27:50,677] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,676] {models.py:1342} INFO - Executing <Task(PythonOperator): move_rename> on 2018-01-01 00:00:00
+[2018-05-28 15:27:50,696] {base_task_runner.py:95} INFO - Subtask: ['/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/streams/2017/09/09/allcountries', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/users/2017/09/09', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/tracks/2017/09/09']
+[2018-05-28 15:27:50,697] {base_task_runner.py:95} INFO - Subtask: Moving tracks, users and streams files to current directory
+[2018-05-28 15:27:50,697] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:27:50,696] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:28:01,333] {jobs.py:2083} INFO - Task exited with return code 0
+[2018-05-28 15:30:45,410] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:30:45,572] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline move_rename 2018-01-01T00:00:00 --job_id 7 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:30:45,819] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:45,819] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:30:45,884] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:45,883] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:30:45,899] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:45,899] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:30:46,067] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,066] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:30:46,220] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,220] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,247] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,247] {models.py:1318} INFO - 
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: Starting attempt 2 of 2
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:30:46,247] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:30:46,259] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,259] {models.py:1342} INFO - Executing <Task(PythonOperator): move_rename> on 2018-01-01 00:00:00
+[2018-05-28 15:30:46,276] {base_task_runner.py:95} INFO - Subtask: ['/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/streams/2017/09/09/allcountries', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/users/2017/09/09', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/tracks/2017/09/09']
+[2018-05-28 15:30:46,276] {base_task_runner.py:95} INFO - Subtask: Moving tracks, users and streams files to current directory
+[2018-05-28 15:30:46,276] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:46,275] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:30:50,582] {jobs.py:2083} INFO - Task exited with return code 0
+[2018-05-28 15:33:05,308] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:33:05,470] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline move_rename 2018-01-01T00:00:00 --job_id 11 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:33:05,729] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:05,728] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:33:05,794] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:05,794] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:33:05,810] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:05,810] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:33:05,978] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:05,978] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:33:06,132] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:06,132] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:33:06,159] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:06,159] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.move_rename 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:33:06,160] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:06,159] {models.py:1318} INFO - 
+[2018-05-28 15:33:06,160] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:33:06,160] {base_task_runner.py:95} INFO - Subtask: Starting attempt 1 of 2
+[2018-05-28 15:33:06,160] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:33:06,160] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:33:10,778] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:10,777] {models.py:1342} INFO - Executing <Task(PythonOperator): move_rename> on 2018-01-01 00:00:00
+[2018-05-28 15:33:10,847] {base_task_runner.py:95} INFO - Subtask: ['/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/streams/2017/09/09/allcountries', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/users/2017/09/09', '/home/vital/Desktop/record-union/ru-0c488479-2436-40a1-9e13-c9831c8a938d/tracks/2017/09/09']
+[2018-05-28 15:33:10,847] {base_task_runner.py:95} INFO - Subtask: Moving tracks, users and streams files to current directory
+[2018-05-28 15:33:10,847] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:10,843] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:33:15,813] {jobs.py:2083} INFO - Task exited with return code 0

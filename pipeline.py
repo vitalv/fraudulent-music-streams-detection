@@ -144,7 +144,11 @@ t3.set_upstream(t2)
 
 
 '''
-Run 
+Run one task 
 airflow test my_pipeline fetch_data 2018-05-28
 without the need of a running web server to check 
+
+Run dag
+airflow backfill my_pipeline -s 2018-01-01
+
 '''

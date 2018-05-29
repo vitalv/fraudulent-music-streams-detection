@@ -1,0 +1,57 @@
+[2018-05-28 15:28:01,921] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:28:02,085] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline unzip 2018-01-01T00:00:00 --job_id 4 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:28:02,344] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,344] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:28:02,410] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,410] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:28:02,425] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,425] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:28:02,593] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,593] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:28:02,748] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,748] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:28:02,775] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,775] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:28:02,776] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,775] {models.py:1318} INFO - 
+[2018-05-28 15:28:02,776] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:28:02,776] {base_task_runner.py:95} INFO - Subtask: Starting attempt 1 of 2
+[2018-05-28 15:28:02,776] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:28:02,776] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:28:02,787] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:02,786] {models.py:1342} INFO - Executing <Task(PythonOperator): unzip> on 2018-01-01 00:00:00
+[2018-05-28 15:28:09,239] {base_task_runner.py:95} INFO - Subtask: Unzipping tracks.gz, users.gz and streams.gz
+[2018-05-28 15:28:09,239] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:28:09,239] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:28:12,108] {jobs.py:2083} INFO - Task exited with return code 0
+[2018-05-28 15:30:51,193] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:30:51,354] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline unzip 2018-01-01T00:00:00 --job_id 8 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:30:51,603] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:51,603] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:30:51,668] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:51,668] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:30:51,684] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:51,684] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:30:51,851] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:51,851] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:30:52,007] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:52,007] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:52,034] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:52,034] {models.py:1318} INFO - 
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: Starting attempt 2 of 2
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:30:52,034] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:30:52,046] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:52,046] {models.py:1342} INFO - Executing <Task(PythonOperator): unzip> on 2018-01-01 00:00:00
+[2018-05-28 15:30:52,056] {base_task_runner.py:95} INFO - Subtask: gzip: tracks already exists; do you wish to overwrite (y or n)? 	not overwritten
+[2018-05-28 15:30:52,058] {base_task_runner.py:95} INFO - Subtask: gzip: users already exists; do you wish to overwrite (y or n)? 	not overwritten
+[2018-05-28 15:30:52,061] {base_task_runner.py:95} INFO - Subtask: gzip: streams already exists; do you wish to overwrite (y or n)? 	not overwritten
+[2018-05-28 15:30:52,061] {base_task_runner.py:95} INFO - Subtask: Unzipping tracks.gz, users.gz and streams.gz
+[2018-05-28 15:30:52,061] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:30:52,061] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:30:56,373] {jobs.py:2083} INFO - Task exited with return code 0
+[2018-05-28 15:33:16,463] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:33:16,628] {base_task_runner.py:112} INFO - Running: ['bash', '-c', u'airflow run my_pipeline unzip 2018-01-01T00:00:00 --job_id 12 --raw -sd DAGS_FOLDER/pipeline.py']
+[2018-05-28 15:33:16,873] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:16,872] {__init__.py:57} INFO - Using executor SequentialExecutor
+[2018-05-28 15:33:16,948] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:16,947] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/Grammar.txt
+[2018-05-28 15:33:16,963] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:16,963] {driver.py:120} INFO - Generating grammar tables from /usr/lib/python2.7/lib2to3/PatternGrammar.txt
+[2018-05-28 15:33:17,149] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:17,148] {models.py:167} INFO - Filling up the DagBag from /home/vital/Desktop/record-union/pipeline.py
+[2018-05-28 15:33:17,351] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:17,350] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:17,385] {models.py:1126} INFO - Dependencies all met for <TaskInstance: my_pipeline.unzip 2018-01-01 00:00:00 [queued]>
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:17,385] {models.py:1318} INFO - 
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: Starting attempt 1 of 2
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: --------------------------------------------------------------------------------
+[2018-05-28 15:33:17,386] {base_task_runner.py:95} INFO - Subtask: 
+[2018-05-28 15:33:17,398] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:17,398] {models.py:1342} INFO - Executing <Task(PythonOperator): unzip> on 2018-01-01 00:00:00
+[2018-05-28 15:33:17,543] {base_task_runner.py:95} INFO - Subtask: rm: cannot remove 'tracks.gz': No such file or directory
+[2018-05-28 15:33:18,804] {base_task_runner.py:95} INFO - Subtask: rm: cannot remove 'users.gz': No such file or directory
+[2018-05-28 15:33:23,794] {base_task_runner.py:95} INFO - Subtask: rm: cannot remove 'streams.gz': No such file or directory
+[2018-05-28 15:33:23,795] {base_task_runner.py:95} INFO - Subtask: Unzipping tracks.gz, users.gz and streams.gz
+[2018-05-28 15:33:23,795] {base_task_runner.py:95} INFO - Subtask: [2018-05-28 15:33:23,794] {python_operator.py:81} INFO - Done. Returned value was: None
+[2018-05-28 15:33:26,648] {jobs.py:2083} INFO - Task exited with return code 0
