@@ -1,3 +1,5 @@
 streams
 tracks
 users
+*.gz
+*.pyc
