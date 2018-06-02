@@ -1,5 +1,5 @@
 #! /usr/bin/python
-
+import os
 import numpy as np
 import pandas as pd
 import ast
@@ -26,12 +26,15 @@ tracks = read_data('tracks')
 users = read_data('users')
 streams = read_data('streams')
 
+#add 'users', and 'tracks' information to 'streams' to have all the info in one df 
+streams = pd.merge(streams, users, on='user_id')
+streams = pd.merge(streams, tracks, on='track_id')
 
 
 
 
 
-#The objective is to build a classifier to identify accounts likely belonging to bots
+#The goal is to build a classifier to identify accounts likely belonging to bots
 #But to do that we need first labels to define categories: human user / bot
 #To create the labels one could look for potential 'red flags'/giveaways. And combine those creating a scoring method
 #to measure the likelihood of an account being a bot 
@@ -41,7 +44,7 @@ streams = read_data('streams')
 
 
 
-#PRF 1: (Potential Red Flag) Parameter NFSC Normalized Frequency of Streams per Country:
+#Find Normalized Frequency of Streams (per 'country', 'os', 'access', 'device'):
 '''
 This was motivated by the fact that the users in top of stream_counts 
 Eg. users[users.user_id == '8ec3584b7ef681f6b817c6b2a5b54153011d7efa']
@@ -51,9 +54,8 @@ But maybe some insights can be acquired
 Wait, there might be real human users from one country that are just very heavy users. Yes
 But one could normalize the frequency in the top n to the frequency in a background random n streams
 
+
 '''
-streams = pd.merge(streams, users, on='user_id')
-streams = pd.merge(streams, tracks, on='track_id')
 
 stream_counts = streams.groupby(['user_id', 'track_id']).size().reset_index(name='counts')
 #stream_counts =	stream_counts.sort_values(by='counts', ascending=False)
@@ -62,7 +64,7 @@ stream_counts = streams.groupby(['user_id', 'track_id']).size().reset_index(name
 #stream counts is the number of times a track is played by a user
 
 
-def nfsc(stream_counts, group_by='country', top_n=100):
+def nfsc(streams, group_by, top_n):
 
 	'''
 	Normalized Frequency of Stream Counts
@@ -73,29 +75,27 @@ def nfsc(stream_counts, group_by='country', top_n=100):
 	#stream_counts = streams.groupby(['user_id', 'track_id']).size().reset_index(name='counts')
 	#stream_counts.sort_values(by='counts', ascending=False)
 
-	#Countries of origin for the top n users in stream_counts:
+	#Get the top n users in stream_counts:
 	top_streams_users = stream_counts.sort_values(by='counts', ascending=False).head(top_n).user_id
-	#top_streams_users_countries = [users[users.user_id == u].country.values[0] for u in top_streams_users.values]
+	#And get the country/os/access of those users
 	top_streams_users_grouped = [streams[streams.user_id == u][group_by].values[0] for u in top_streams_users]
 
 	plt.figure(figsize=(20,12))
-	#ax = sb.distplot(top_streams_users_countries, bins=len(list(set(users.country))), kde=False)
-	ax = sb.countplot(top_streams_users_countries)
+	ax = sb.countplot(top_streams_users_grouped)
 	plt.xlabel(group_by)
 	plt.title('%s for the Top %s streams'%(group_by, top_n))
 	plt.savefig('plots/%s_for_top_%s_streams.png'%(group_by, top_n))
 	#plt.show()
 
-	#rand_streams_users_grouped = [users[users.user_id == u].country.values[0] for u in streams.sample(top_n).user_id]
+	#Get the country/os/access of a random group of users (the same size as top_n)
 	rand_streams_users_grouped = [streams[streams.user_id == u][group_by].values[0] for u in streams.sample(top_n).user_id]
 
 	plt.figure(figsize=(20,12))
-	#sb.distplot(rand1000_streams_users_countries, bins=users.country.max(), kde=False)
 	ax = sb.countplot(rand_streams_users_grouped)
 	plt.xlabel(group_by)
 	plt.title('%s for a random sample of %s streams'%(group_by,top_n))
-	#plt.show()
 	plt.savefig('plots/%s_for_rand_%s_streams.png'%(group_by,top_n))
+	#plt.show()
 
 
 	#Normalize frequency in top1000 to freq in rand1000
@@ -118,8 +118,38 @@ def nfsc(stream_counts, group_by='country', top_n=100):
 	return nfsc
 
 
-nfsc100_country  = nfsc(stream_counts, group_by='country', top_n = 100)
-nfsc1000_country = nfsc(stream_counts, group_by='country', top_n = 1000)
+
+def add_nfsc_to_streams():
+
+	#this takes quite long time. TO DO: Parallelize (see class MyPool below)
+
+	for g in ['country', 'os', 'access', 'device_type', 'gender']:
+		nfsc100 = nfsc(streams, group_by=g, top_n = 100)
+		nfsc500 = nfsc(streams, group_by=g, top_n = 500)
+		streams['nfsc100_%s'%g] = [nfsc100[c] for c in streams[g]]
+		streams['nfsc500_%s'%g] = [nfsc500[c] for c in streams[g]]
+
+	#add a combined nfsc_score
+	cols = [c for c in streams.columns if 'nfsc' in c]
+	streams['nfsc_score'] = streams[cols].mean(axis=1)
+	return streams.sort_values(by='nfsc_score', ascending=False)
+
+
+
+
+#with the df resulting from add_nfsc_to_streams:
+streams['label'] =  [1]*100 + [0]*(len(streams)-100)
+
+#build a new df (train dataset) based on the considered features: country os access device_type gender
+dfX = streams[['country', 'os', 'access', 'device_type', 'gender', 'label']]
+
+#convert all categorical values to numbers and scale them to be between 0 and 1 for instance
+for g in ['os', 'access', 'device_type', 'gender']:
+	d = dict(zip(set(dfX[g]),range(len(set(dfX[g])))))
+	#set a number for each categorical value. (eg: 'iOS': 0, 'Android': 1, etc...)
+	dfX[g] = [d[c] for c in dfX[g]] 
+	#and scale those numbers to be between 0 and 1
+	dfX[g] = [(c - min(dfX[g])) / float(max(dfX[g]) - min(dfX[g])) for c in dfX[g]]
 
 
 
@@ -127,48 +157,9 @@ nfsc1000_country = nfsc(stream_counts, group_by='country', top_n = 1000)
 
 
 
-
-#Build a new users df with columns:
-#nsfc100_country, nfsc1000_country, nfsc100_os, nfsc1000_os, nfsc1000_os, nfsc100_access, nfsc1000_access, label
-
-
-
-
-
-
-
-
-
-
-
-
-
-#----------------------------------------------------
-
-#CHECK distribution of stream lengths
-#see if there is a peak at 30 sec
-#sb.distplot(streams.length.values)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#PRF 2: (Potential Red Flag) Track-User Enrichment Analysis
+# An extension of the previous nfsc concept is the more robust statistical approach described below:
+# 'Over-representation' or 'Enrichment' of one artist/band in the streams by a group of users
+# Provides a way to classify artists as potentially responsible for fraud (bots loop-streaming)
 '''
 
 Based on the following observation. 
@@ -226,24 +217,16 @@ Combining all these it might be possible to find a pattern. Interesting!
 '''
 
 
-#add 'user_country', 'artist' and 'user_access' to streams for comodity
-#otherwise, every time I need to set k based on something that is not in 'streams' E.g. users from a country
-#I need to first find the users from the country 
-#uic = users[users.country == c].user_id
-#and then k would be 
-#streams[streams.user_id.isin(uic)] #which takes very long! and it needs be done for every group of users!
-
-streams = pd.merge(streams, users, on='user_id')
-streams = pd.merge(streams, tracks, on='track_id')
-
 from scipy import stats
 import statsmodels.sandbox.stats.multicomp as mc
 
 
 
-def enrich(k, N, tests, tests_desc, xmin=10, top_N=1000):
+def enrich(group_by, g, k, N, tests, tests_desc, xmin=10, top_N=1000):
 
 	'''
+	group_by: the column on which the grouping of k is based ('os', 'country', 'access' )
+	g: the group in particular ('Android', 'iOS', etc..)
 	tests_desc: what is tested (artist, track, album). Has to be an existing column in streams (the extended streams w all columns)
 	uses scipy.stats hypergeometric test to extract probabilities (p-values) of track/album enrichment for a user/group of users
 	k: column by which users are grouped (os, country, access,...)
@@ -252,14 +235,14 @@ def enrich(k, N, tests, tests_desc, xmin=10, top_N=1000):
 	top_N: add only top N results (lowest p-values) to output dataframe
 	'''
 
-	enrichment = pd.DataFrame(columns=["artist", "x", "k", "m", "N", "p-val" ])
+	enrichment = pd.DataFrame(columns=["g", tests_desc, "x", "k", "m", "N", "p-val"])
 	for i in range(len(tests)):
-		x = len(streams[(streams.os == os) & (streams[tests_desc] == tests[i])])
+		x = len(streams[(streams[group_by] == g) & (streams[tests_desc] == tests[i])])
 		if x > xmin: 
 			m = len(streams[streams[tests_desc] == tests[i]])
 			p = stats.hypergeom.sf(x, N, k, m)
-			enrichment.loc[i] = [tests[i], x, k, m, N, p]
-			print "%s\tx:%s k:%s m:%s N:%s p:%s"%(tests[i], x,k,m,N,p)
+			enrichment.loc[i] = [g, tests[i], x, k, m, N, p]
+			print "%s\t%s\tx:%s k:%s m:%s N:%s p:%s"%(g,tests[i], x,k,m,N,p)
 	#Multiple hypothesis correction, transform p-values to adjusted p-values:
 	if len(tests) > 100:
 		reject, adj_pvalues, corrected_a_sidak, corrected_a_bonf =  mc.multipletests(enrichment["p-val"], method='fdr_bh')
@@ -271,57 +254,107 @@ def enrich(k, N, tests, tests_desc, xmin=10, top_N=1000):
 
 
 
-#k users grouped by OS. See if the k groups of users have some enrichment in some artist
+
+
 
 artists = list(set(tracks.album_artist)) #tests for enrich function
-
 #Filter 'm' (total number of times that an artist is streamed) 
 #to be at least 100. The results will be more meaningful and the enrichment will go much faster
 artists_100 = [a for a in artists if len(streams[streams.album_artist == a]) > 100]
 
 
-for os in list(set(streams.os)):
-	print os
-	k=len(streams[streams.os==os])
+
+
+
+def batchEnrich(processes = None):
+
+
+	'''
+	for every type of grouping (os, country, access)
+	the enrichment takes quite long time (1hr approx on my laptop (i7 8Gb), parallelize
+	this will start a new process for every type of 'os' (5 processes)... 
+	and then the same for every 'country', 'access'
+	'''
+
+	if not os.path.isdir('enrichment'):
+		os.mkdir('enrichment')
+  
+  	'''
+  	# TO DO:
+	# parallelize the enrichment function #see MyPool class below
+
+	pool = MyPool(processes) 
+
+
+	for g in ['os', 'country', 'access']:
+		print("  Enrichment analysis for %s"%g)
+		for 
+		k=len(streams[streams[g]==os])
+		N=len(streams)
+		pool.applyAsync(enrich, [ms1File, ms1Folder, ms2Folder, beFolder])
+		pool.checkPool()
+	'''
+
+
 	N=len(streams)
-	enrichment = enrich(k, N, tests=artists_100, tests_desc='album_artist')
-	print enrichment
-	enrichment.to_csv('enrichment/%s_artist_enrichment.csv'%os)
-
-
-#for every type of grouping (os, country, access)
-#this takes long, parallelize
-
-#Read the resulting dataframes 
-	#keep only adjusted p-values < .05
-	#add  column: type of group 'os'
-	#concatenate (axis=0)
-
-
-#Repeat the enrichment analysis for country, and access
-#Read the resulting dataframes adding column: 'country' and 'access'
-
-for c in list(set(streams.country)):
-	print country
-	enrichment = enrich(k=len(streams[streams.country==c]), N=len(streams), tests=artists_100, tests_desc='country')
-	print enrichment
-	enrichment.to_csv('enrichment/%s_artist_enrichment.csv'%c)
-
-
-
-#Merge resulting dataframes on artist (add new p-val columns for 'os', 'country', 'access' with suffix)
-
-#Combine the p-values somehow into a new column
-
-#Sort by combination-score. Find a few good p-values (low)
-
-#In the extended 'streams' df find users with 'artist', 'os', 'country', 'access' of those low p-values
-#and Label those motherfuckers as potential bots
+	tests_desc='album_artist'
+	for group_by in ['os', 'access', 'country']: #the column on which the grouping of k is based ('os', 'country', 'access' )
+		for g in list(set(streams[group_by])):   #the group in particular ('Android', 'iOS', etc..)
+			print "\n\n%s"%g
+			k = len(streams[streams[group_by]==g])
+			enrichment = enrich(group_by, g, k, N, tests=artists_100, tests_desc=tests_desc)
+			enrichment.to_csv('enrichment/%s/%s_%s_enrichment.csv'%(group_by,g,tests_desc))
 
 
 
 
 
+def combine():
+
+	'''
+	concatenates (along rows) all dfs from the enrichment from each group.
+	Ex: concatenates iOS, Android, Mac, Linux... to a long Df
+	Three resulting long dfs: OS, Access, Country.
+	Combines the p-values
+	'''
+
+	df_group_by_List = []
+	for group_by in ['os', 'access', 'country']:
+		dfgList = []
+		for f in os.listdir('enrichment/%s/'%group_by):
+			dfg = pd.read_csv('enrichment/%s/%s'%(group_by, f), usecols=range(1,9))
+			dfg = dfg[dfg['adj_pval(BH)']<0.1][['album_artist', 'g', 'adj_pval(BH)']]
+			dfgList.append(dfg)
+		dfg = pd.concat(dfgList)
+		df_group_by_List.append(dfg)
+
+	#merge_cols = ['album_artist', 'g', 'adj_pval(BH)']
+	dfX = reduce(lambda x, y: pd.merge(x, y, on = 'album_artist'), df_group_by_List)
+	dfX = dfX.rename(columns={'g': 'country', 'adj_pval(BH)': 'p_country', 'g_x': 'os', \
+							'adj_pval(BH)_x': 'p_os', 'g_y': 'access', 'adj_pval(BH)_y': 'p_access'})
+
+	dfX['p_avg'] = dfX[['p_os', 'p_access', 'p_country']].mean(axis=1)
+	dfX.sort_values(by='p_avg')
+
+	return dfX
+
+
+#there are still a lot of artists with low combined p-values (simultaneously for country access and os)
+#find the most_common
+
+collections.Counter(dfX[dfX.p_avg <= 0.01].country).most_common
+collections.Counter(dfX[dfX.p_avg <= 0.01].access)
+collections.Counter(dfX[dfX.p_avg <= 0.01].os)
+
+
+
+
+#Linux users:
+#A lot of artists have exactly
+#k = 1400 
+#m = 1400
+#Examples: #Aurora Cano, Micha Burden, Frederic Goodson
+#Mmmmmmmm
 
 
 
@@ -333,15 +366,56 @@ for c in list(set(streams.country)):
 
 
 
-#Potential Red Flags
-
-#In streams, group by track_id (and user_id in second level!)
-#see tracks repeated more than a n times within a Delta timestamp (by same user)
-
-#Distribution of the number of streams per user. Has to be normal
-
-#For a user see if the tracks they stream are equally distributed. 
-#E.g. a user has 1000 streams and it's exactly 4 songs 250 times each. -> giveaway
 
 
-#For a user see if the tracks they stream have the exact same time stamp
+
+
+
+
+
+
+
+
+
+
+
+
+######################
+## Helper functions ##
+######################
+
+class MyPool:
+
+	def __init__(self, processes=1):
+		self.pool = Pool(processes)
+		self.results = []
+	
+	def applyAsync(self, f, args):
+		r = self.pool.apply_async(f, args)
+		self.results.append(r)
+		
+	def checkPool(self):
+		try:
+			for res in self.results:
+				res.get(0xFFFFFFFF)
+			self.pool.close()
+			self.pool.join()
+		except KeyboardInterrupt:
+			print "Caught KeyboardInterrupt, terminating workers"
+			self.pool.terminate()
+			self.pool.join()
+			sys.exit()
+
+
+def executeCmd(cmd, jobType = "local"):
+
+	print(cmd)
+	print("")
+	sys.stdout.flush()
+	rc = subprocess.call(cmd, shell=True)
+	#rc = 0
+	if rc == 1:
+		print("Error while processing " + cmd)
+		return 1
+	else:
+		return 0
