@@ -15,12 +15,9 @@ from fetch import fetch_data, move_rename, gunzip
 
 from datetime import datetime, timedelta
 
+from process import *
 
-'''
-We're about to create a DAG and some tasks,
-we have the choice to explicitly pass a set of arguments to each task's constructor (which would become redundant), 
-or (better!) we can define a dictionary of default parameters that we can use when creating tasks.
-'''
+
 
 
 default_args = {
@@ -40,17 +37,6 @@ default_args = {
 
 
 
-'''
-DAG object to nest the tasks into. 
-Pass a string that defines the dag_id, a unique identifier for the DAG. 
-Pass the default argument dictionary defined above and define a schedule_interval of 1 day for the DAG.
-
-If the DAG is written to handle it's own catchup 
-(IE not limited to the interval, but instead to "Now" for instance.), 
-then you will want to turn catchup off (Either on the DAG itself with dag.catchup = False) 
-'''
-
-#dag = DAG('my_pipeline', default_args=default_args, catchup=False )
 dag = DAG('my_pipeline', default_args=default_args, schedule_interval='@once')
 
 
@@ -58,42 +44,6 @@ dag = DAG('my_pipeline', default_args=default_args, schedule_interval='@once')
 
 
 
-'''
-Tasks are generated when instantiating operator objects. 
-An object instantiated from an operator is called a constructor. 
-The first argument task_id acts as a unique identifier for the task.
-
-'''
-
-
-'''
-t1 = BashOperator(
-    task_id='print_date',
-    bash_command='date',
-    dag=dag)
-
-t2 = BashOperator(
-    task_id='sleep',
-    bash_command='sleep 5',
-    retries=3,
-    dag=dag)
-
-
-templated_command = """
-    {% for i in range(5) %}
-        echo "{{ ds }}"
-        echo "{{ macros.ds_add(ds, 7) }}"
-        echo "{{ params.my_param }}"
-    {% endfor %}
-"""
-
-t3 = BashOperator(
-    task_id='templated',
-    bash_command=templated_command,
-    params={'my_param': 'Parameter I passed in'},
-    dag=dag)
-
-'''
 
 
 t1 = PythonOperator(
@@ -122,9 +72,66 @@ t3 = PythonOperator(
     )
 
 
+t4 =  PythonOperator(
+    task_id='read_data',
+    dag=dag,
+    provide_context=False,
+    python_callable=read_streams_tracks_users
+    )
 
+
+t5 =  PythonOperator(
+    task_id='get_nfsc',
+    dag=dag,
+    provide_context=False,
+    python_callable=nfsc
+    )
+
+t6 =  PythonOperator(
+    task_id='add_nfsc_to_streams',
+    dag=dag,
+    provide_context=False,
+    python_callable=add_nfsc_to_streams
+    )
+
+t7 =  PythonOperator(
+    task_id='Enrichment',
+    dag=dag,
+    provide_context=False,
+    python_callable=batch_enrich
+    )
+
+
+t8 =  PythonOperator(
+    task_id='save_results',
+    dag=dag,
+    provide_context=False,
+    python_callable=mv_data_to_bucket
+    )
+
+
+#Minimum working Pipeline:
+#NOTE: This has not been fully tested as of 06/03/2018
+
+#1 Copy data from bucket, unzip ---------
 t2.set_upstream(t1)
 t3.set_upstream(t2)
+
+
+#2 Read and process ---------------------
+t4.set_upstream(t3) #read streams to dataframe
+t5.set_upstream(t4) #estimate normalized frequencies
+t6.set_upstream(t5) #add the nfsc data to the streams df
+t8.set_upstream(t6) #mv results back to bucket
+
+#3 Alternative 'Enrichment' Approach
+t7.set_upstream(t2)
+t8.set_upstream(t7) #mv results back to bucket
+
+
+
+
+
 
 #t1 >> t2 
 
